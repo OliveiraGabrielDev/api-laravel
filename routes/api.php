@@ -19,7 +19,11 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/user/{id}', [UserController::class, 'show']);
+Route::get('/usuarios', [UserController::class, 'index']);
+Route::get('/usuarios/{id}', [UserController::class, 'show']);
+Route::post('/usuarios', [UserController::class, 'store']);
+Route::put('/usuarios/{id}', [UserController::class, 'update']);
+Route::delete('usuarios/{id}', [UserController::class, 'destroy']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

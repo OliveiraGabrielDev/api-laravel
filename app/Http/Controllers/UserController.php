@@ -12,7 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $user = User::all();
+        return $user;
     }
 
     /**
@@ -20,13 +21,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3',
+            'password' => 'required|min:3',
+            'email' => 'required',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'password' => $request->password,
+            'email' => $request->email
+        ]);
+
+        return response()->json($request->all());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(int $id)
     {
         $user = User::where('id', $id)->firstOrFail();
         return $user;
@@ -37,7 +50,14 @@ class UserController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        //
+        $user = User::where('id', $id)->firstOrFail();
+        $user->update([
+            'name' => $request->name,
+            'password' => $request->password,
+            'email' => $request->email
+        ]);
+
+        return response()->json($request->all());
     }
 
     /**
@@ -45,6 +65,7 @@ class UserController extends Controller
      */
     public function destroy(int $id)
     {
-        //
+        $user = User::where('id', $id)->firstOrFail();
+        $user->delete();
     }
 }
