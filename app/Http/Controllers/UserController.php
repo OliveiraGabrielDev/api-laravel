@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use App\Models\User;
+
 
 class UserController extends Controller
 {
@@ -12,8 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::all();
-        return $user;
+        $users = User::all();
+        return response()->json($users);
     }
 
     /**
@@ -21,19 +23,23 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|min:3',
-            'password' => 'required|min:3',
-            'email' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|min:3',
+                'password' => 'required|min:3',
+                'email' => 'required',
+            ]);
 
-        User::create([
-            'name' => $request->name,
-            'password' => $request->password,
-            'email' => $request->email
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'password' => $request->password,
+                'email' => $request->email
+            ]);
 
-        return response()->json($request->all());
+            return response()->json(['user' => $user, 'message' => 'Usuário criado com sucesso'], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Erro ao criar usuário.', 'errors' => $e->errors()], 422);
+        }
     }
 
     /**
@@ -41,8 +47,12 @@ class UserController extends Controller
      */
     public function show(int $id)
     {
-        $user = User::where('id', $id)->firstOrFail();
-        return $user;
+        try {
+            $user = User::where('id', $id)->firstOrFail();
+            return response()->json(['user' => $user]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Usuário não encontrado!', 'error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -50,14 +60,26 @@ class UserController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $user = User::where('id', $id)->firstOrFail();
-        $user->update([
-            'name' => $request->name,
-            'password' => $request->password,
-            'email' => $request->email
-        ]);
+        try {
 
-        return response()->json($request->all());
+            $request->validate([
+                'name' => 'required|min:3',
+                'password' => 'required|min:3',
+                'email' => 'required',
+            ]);
+
+            $user = User::where('id', $id)->firstOrFail();
+
+            $user->update([
+                'name' => $request->name,
+                'password' => $request->password,
+                'email' => $request->email
+            ]);
+
+            return response()->json(['user' => $user, 'message' => 'Usuário criado com sucesso'], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Erro ao criar usuário.', 'errors' => $e->errors()], 422);
+        }
     }
 
     /**
@@ -65,7 +87,13 @@ class UserController extends Controller
      */
     public function destroy(int $id)
     {
-        $user = User::where('id', $id)->firstOrFail();
-        $user->delete();
+        try {
+            $user = User::where('id', $id)->firstOrFail();
+            $user->delete();
+
+            return response()->json(['message' => 'Usuário deletado com sucesso!.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Usuário não encontrado.', 'error' => $e->getMessage()]);
+        }
     }
 }
