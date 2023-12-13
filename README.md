@@ -73,3 +73,7 @@ Agora, a API estará acessível em `http://localhost:8000`.
 - **database/migrations/**: Arquivos de migração para criar as tabelas no banco de dados.
 - **database/seeders/DatabaseSeeder.php**: Arquivo para gerar usuarios aleatorios para os testes.
 - **routes/api.php**: Definição das rotas da API.
+
+## Links Úteis
+
+Para entender as exceções em PT_BR: https://github.com/lucascudo/laravel-pt-BR-localization
