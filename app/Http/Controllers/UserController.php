@@ -79,6 +79,8 @@ class UserController extends Controller
             return response()->json(['user' => $user, 'message' => 'Usuário criado com sucesso'], 201);
         } catch (ValidationException $e) {
             return response()->json(['message' => 'Erro ao criar usuário.', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Usuário não encontrado.', 'error' => $e->getMessage()]);
         }
     }
 
